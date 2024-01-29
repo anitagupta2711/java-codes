@@ -1,0 +1,96 @@
+package Controller;
+
+
+	import java.io.IOException;
+	import java.util.ArrayList;
+
+	import javax.servlet.RequestDispatcher;
+	import javax.servlet.ServletException;
+	import javax.servlet.annotation.WebServlet;
+	import javax.servlet.http.HttpServlet;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+
+	import Model.Product;
+	import Model.ProductDAO;
+	@WebServlet(urlPatterns= {"/addlink","/displaylink","/updatelink","deletelink"})
+	public class ProductController extends HttpServlet{
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			String url=req.getServletPath();
+			switch(url) {
+			case "/addlink"://call add method
+				addproduct(req,resp);
+				break;
+			case "/displaylink":
+				displayProduct(req,resp);
+				//call display method
+					break;
+			case "/updatelink":
+				updateProduct(req,resp);
+			
+			case "/deletelink":
+				deleteProduct(req,resp);
+		}}
+
+		private void deleteProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			//fetch the values
+			int id=Integer.parseInt(req.getParameter("productid"));
+			Product p1=new Product();
+			p1.setId(id);
+			ProductDAO d1=new ProductDAO();
+			int count=d1.deleteProduct(p1);
+			req.setAttribute("count", count);
+			req.getRequestDispatcher("delete.jsp").forward(req, resp);
+		}
+
+		private void updateProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			//fetch the values
+			        int id=Integer.parseInt(req.getParameter("productid"));
+					String name=req.getParameter("productname");
+					double price=Double.parseDouble(req.getParameter("productprice"));
+					String category=req.getParameter("productcategory");
+					//create an object of DTO class
+					Product p1=new Product();
+					p1.setId(id);
+					p1.setName(name);
+					p1.setPrice(price);
+					p1.setCategory(category);
+					//create an object of DAO class
+					ProductDAO d1=new ProductDAO();
+	                int count=d1.updateproduct(p1);
+	                req.setAttribute("count", count);
+	                RequestDispatcher rd=req.getRequestDispatcher("update.jsp");
+	        		rd.forward(req, resp);
+	        		}
+
+		private void displayProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			ProductDAO p1=new ProductDAO();
+	        ArrayList<Product> productList=p1.displayProduct();
+	       req.setAttribute("productlist", productList);
+	        req.getRequestDispatcher("Display.jsp").forward(req, resp);
+			
+			}
+
+		private void addproduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			//fetch the values
+			String name=req.getParameter("productname");
+			double price=Double.parseDouble(req.getParameter("productprice"));
+			String category=req.getParameter("productcategory");
+			//create an object of Dto class
+			Product p1 =new Product();
+			p1.setName(name);
+			p1.setPrice(price);
+			p1.setCategory(category);
+			//object of Dao class
+			ProductDAO d1=new ProductDAO();
+			int count=d1.addproduct(p1);
+			req.setAttribute("finalcount", count);
+			RequestDispatcher rd=req.getRequestDispatcher("confirm.jsp");
+			rd.forward(req, resp);
+			
+		}
+
+	}
+
+
